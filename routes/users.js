@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+const validator = require('validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
@@ -15,21 +18,39 @@ router.get('/', asyncErrorHandler(async (req, res, next) => {
 }));
 
 // 新增使用者，使用者註冊
-router.post('/', asyncErrorHandler(async (req, res, next) => {
+router.post('/sign_up', asyncErrorHandler(async (req, res, next) => {
   let { name, email, password } = req.body;
+
   if (!name || !email || !password) return appError(400, '欄位資訊不能為空！', next);
+  if (!validator.isAlphanumeric(name)) return appError(400, '名稱只能是英數字的組合！', next);
+  if (!validator.isEmail(email)) return appError(400, 'Email 格式不符合！', next);
+  if (!validator.isLength(password, {min: 8, max: 16})) return appError(400, '密碼長度只能介於 8 到 16 碼！', next);
 
   const hasEmail = await User.findOne({email: email}).exec();
   if (hasEmail) return appError(400, '該電子信箱已被使用者註冊！', next);
 
+  password = await bcrypt.hash(password, 12);
   const newUser = await User.create({
     name,
     email,
     password
   });
-  res.json({
-    status: 'sucess',
-    data: newUser
+
+  password = undefined; // clean password in ram
+
+  // generate JWT
+  const token = jwt.sign(
+    {id: newUser._id},
+    process.env.JWT_SECRET,
+    {expiresIn: process.env.JWT_EXPIRATION}
+  );
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      user: newUser,
+      token
+    }
   });
 }));
 
