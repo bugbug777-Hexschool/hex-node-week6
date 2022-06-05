@@ -48,7 +48,7 @@ router.post('/sign_up', asyncErrorHandler(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: {
-      user: newUser,
+      name: newUser.name,
       token
     }
   });
