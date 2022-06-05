@@ -54,6 +54,28 @@ router.post('/sign_up', asyncErrorHandler(async (req, res, next) => {
   });
 }));
 
+// 使用者登入
+router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) return appError(400, '帳號密碼不能為空！');
+  const user = await User.findOne({email}).select('+password');
+  const auth = await bcrypt.compare(password, user.password);
+
+  if (!auth) return appError(400, '帳號密碼錯誤！', next);
+  const token = jwt.sign({id:user._id}, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRATION
+  });
+
+  res.json({
+    status: 'success',
+    data: {
+      name: user.name,
+      token
+    }
+  });
+}))
+
 // 更新使用者資訊
 router.patch('/:id', asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;

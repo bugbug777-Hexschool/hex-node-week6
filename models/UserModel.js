@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, '使用者名稱為必填']
     },
+    password: {
+      type: String,
+      required: [true, '使用者密碼為必填'],
+      select: false
+    },
     gender: {
       type: String,
       enum: ['male', 'female'],
