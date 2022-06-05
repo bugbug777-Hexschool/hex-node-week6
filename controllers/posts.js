@@ -1,7 +1,7 @@
 const Post = require('../models/PostModel');
+const successHandler = require('../service/successHandler')
 const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
-const auth = require('../service/auth');
 
 // 取得所有貼文
 const getPosts = asyncErrorHandler(async (req, res) => {
@@ -12,10 +12,7 @@ const getPosts = asyncErrorHandler(async (req, res) => {
       path: 'user',
       select: 'name'
     }).sort({ createdAt: sort });
-    res.json({
-      status: 'success',
-      data: posts
-    });
+  successHandler(res, posts);
 });
 
 // 取得單筆貼文
@@ -26,12 +23,10 @@ const getPost = asyncErrorHandler(async (req, res, next) => {
       path: 'user',
       select: 'name'
     });
+
   if (!post) return appError(400, '該貼文不存在！', next);
-  res.json({
-    status: 'success',
-    data: post
-  });
-})
+  successHandler(res, post);
+});
 
 // 新增單筆貼文
 const addPost = asyncErrorHandler(async (req, res, next) => {
@@ -43,11 +38,9 @@ const addPost = asyncErrorHandler(async (req, res, next) => {
     content,
     photo
   });
-  res.json({
-    status: 'success',
-    data: newPost
-  });
-})
+
+  successHandler(res, newPost);
+});
 
 // 編輯單筆貼文
 const editPost = asyncErrorHandler(async (req, res, next) => {
@@ -65,20 +58,14 @@ const editPost = asyncErrorHandler(async (req, res, next) => {
     { new: true }
   )
 
-  res.json({
-    status: 'success',
-    data: editedPost
-  });
-})
+  successHandler(res, editedPost);
+});
 
 // 刪除所有貼文
 const deletePosts = asyncErrorHandler(async (req, res) => {
   await Post.deleteMany({});
-  res.json({
-    status: 'success',
-    data: []
-  });
-})
+  successHandler(res, []);
+});
 
 module.exports = {
   getPosts,
