@@ -7,22 +7,6 @@ const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
 const auth = require('../service/auth');
 
-// Middleware
-const isAuth = asyncErrorHandler(async (req, res, next) => {
-  let token;
-  const authorization = req.headers.authorization;
-  if (authorization && authorization.startsWith('Bearer')) {
-    token = authorization.split(' ')[1];
-  }
-  if (!token) return appError(401, '您尚未登入！', next);
-  const payload = await auth.verifyToken(token);
-  const user = await User.findById(payload.id);
-
-  req.user = user;
-
-  next();
-});
-
 /* GET users listing. */
 // 取得所有使用者
 router.get('/', asyncErrorHandler(async (req, res, next) => {
@@ -84,7 +68,7 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
 }))
 
 // 更新密碼
-router.post('/updatePassword', isAuth, asyncErrorHandler(async (req, res, next) => {
+router.post('/updatePassword', auth.checkAuth, asyncErrorHandler(async (req, res, next) => {
   const user = req.user;
   let { password, confirmedPassword } = req.body;
 
@@ -106,7 +90,7 @@ router.post('/updatePassword', isAuth, asyncErrorHandler(async (req, res, next) 
 }));
 
 // 取得使用者個人資訊
-router.get('/profile', isAuth, asyncErrorHandler(async (req, res, next) => {
+router.get('/profile', auth.checkAuth, asyncErrorHandler(async (req, res, next) => {
   const user = req.user;
   res.json({
     status: 'success',
@@ -115,7 +99,7 @@ router.get('/profile', isAuth, asyncErrorHandler(async (req, res, next) => {
 }));
 
 // 更新使用者個人資訊
-router.patch('/profile', isAuth, asyncErrorHandler(async (req, res, next) => {
+router.patch('/profile', auth.checkAuth, asyncErrorHandler(async (req, res, next) => {
   const user = req.user;
   const { name, gender, avatar } = req.body;
 
