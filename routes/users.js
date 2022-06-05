@@ -83,7 +83,7 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
   });
 }))
 
-// 取得使用者個人資料
+// 取得使用者個人資訊
 router.get('/profile/:id', asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const user = await User.findById(id);
@@ -95,8 +95,8 @@ router.get('/profile/:id', asyncErrorHandler(async (req, res, next) => {
   })
 }));
 
-// 更新使用者資訊
-router.patch('/:id', asyncErrorHandler(async (req, res, next) => {
+// 更新使用者個人資訊
+router.patch('/profile/:id', asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name, gender, avatar } = req.body;
   const user = await User.findById(id).exec();
@@ -111,7 +111,7 @@ router.patch('/:id', asyncErrorHandler(async (req, res, next) => {
     {new: true}
   );
   res.json({
-    status: 'sucess',
+    status: 'success',
     data: editedUser
   });
 }));
