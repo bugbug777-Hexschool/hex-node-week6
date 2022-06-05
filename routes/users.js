@@ -52,11 +52,12 @@ router.post('/sign_up', asyncErrorHandler(async (req, res, next) => {
 router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) return appError(400, '帳號密碼不能為空！');
+  if (!email || !password) return appError(400, '帳號密碼不能為空！', next);
   const user = await User.findOne({email}).select('+password');
-  const auth = await bcrypt.compare(password, user.password);
+  const confirmed = await bcrypt.compare(password, user.password);
 
-  if (!auth) return appError(400, '帳號密碼錯誤！', next);
+  if (!confirmed) return appError(400, '帳號密碼錯誤！', next);
+  console.log(user);
   const token = await auth.generateToken(user);
 
   res.json({
