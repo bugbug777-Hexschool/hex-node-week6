@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "8aad5a6e-aba9-4f6f-9e0b-fff1dcb74299",
+		"name": "Metawall - Posts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19625896"
+	},
+	"item": [
+		{
+			"name": "取得所有貼文",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNkODIzMTMxY2E2NWNmMGYyYmI2YiIsImlhdCI6MTY1NDQ0NjExNSwiZXhwIjoxNjU1MDUwOTE1fQ.01kar73zs9ttPK_3zzkK2bsGR0aeX_qZhjmXo5x5FT0",
+						"description": "Bruce",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNjZGYwNDNjOTFjY2U3MDJmMDYzOSIsImlhdCI6MTY1NDQ0MzUwNCwiZXhwIjoxNjU1MDQ4MzA0fQ.V1tei1dhZKfLPvKuLbvlXHV2vLqQFMrJpDPIKRumHXg",
+						"description": "Demon",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{HEROKU}}/posts",
+					"host": [
+						"{{HEROKU}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "取得單一貼文",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNjZGYwNDNjOTFjY2U3MDJmMDYzOSIsImlhdCI6MTY1NDQ0MzUwNCwiZXhwIjoxNjU1MDQ4MzA0fQ.V1tei1dhZKfLPvKuLbvlXHV2vLqQFMrJpDPIKRumHXg",
+						"description": "Demon",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HEROKU}}/posts/629cdb39ccca08534c89bf07",
+					"host": [
+						"{{HEROKU}}"
+					],
+					"path": [
+						"posts",
+						"629cdb39ccca08534c89bf07"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "測試",
+							"disabled": true
+						},
+						{
+							"key": "sort",
+							"value": "-1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "新增一筆貼文",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNkODIzMTMxY2E2NWNmMGYyYmI2YiIsImlhdCI6MTY1NDQ0NjExNSwiZXhwIjoxNjU1MDUwOTE1fQ.01kar73zs9ttPK_3zzkK2bsGR0aeX_qZhjmXo5x5FT0",
+						"description": "Bruce",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNjZGYwNDNjOTFjY2U3MDJmMDYzOSIsImlhdCI6MTY1NDQ0MzUwNCwiZXhwIjoxNjU1MDQ4MzA0fQ.V1tei1dhZKfLPvKuLbvlXHV2vLqQFMrJpDPIKRumHXg",
+						"description": "Demon",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNlN2IzOWQ0MmZlMmUzMjU4MWQzOSIsImlhdCI6MTY1NDQ1MDQ3MCwiZXhwIjoxNjU1MDU1MjcwfQ.6pbdTaqguk-WjJxhmaKVuabL_XPg-3f1zW_wqRnQLzg",
+						"description": "Kara",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tags\": [\"卡拉\"],\n    \"content\": \"The post is created by Kara\",\n    \"photo\": \"https://images.unsplash.com/photo-1504805572947-34fad45aed93?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80\",\n    \"likes\": 10,\n    \"comments\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HEROKU}}/posts",
+					"host": [
+						"{{HEROKU}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "編輯一筆貼文",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNjZGYwNDNjOTFjY2U3MDJmMDYzOSIsImlhdCI6MTY1NDQ0MzUwNCwiZXhwIjoxNjU1MDQ4MzA0fQ.V1tei1dhZKfLPvKuLbvlXHV2vLqQFMrJpDPIKRumHXg",
+						"description": "Demon",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tags\": [\"已編輯\"],\n    \"content\": \"修改過的貼文！\",\n    \"photo\": \"https://images.unsplash.com/photo-1504805572947-34fad45aed93?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1300&q=80\",\n    \"likes\": 10,\n    \"comments\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HEROKU}}/posts/629cdb39ccca08534c89bf07",
+					"host": [
+						"{{HEROKU}}"
+					],
+					"path": [
+						"posts",
+						"629cdb39ccca08534c89bf07"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "刪除所有貼文",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HEROKU}}/posts",
+					"host": [
+						"{{HEROKU}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
