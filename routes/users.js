@@ -2,17 +2,31 @@ var express = require('express');
 var router = express.Router();
 const validator = require('validator');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
 const auth = require('../service/auth');
 
+// Middleware
+const isAuth = asyncErrorHandler(async (req, res, next) => {
+  let token;
+  const authorization = req.headers.authorization;
+  if (authorization && authorization.startsWith('Bearer')) {
+    token = authorization.split(' ')[1];
+  }
+  if (!token) return appError(401, '您尚未登入！', next);
+  const payload = await auth.verifyToken(token);
+  const user = await User.findById(payload.id);
+
+  req.user = user;
+  next()
+});
+
 /* GET users listing. */
 // 取得所有使用者
 router.get('/', asyncErrorHandler(async (req, res, next) => {
   const users = await User.find();
-  res.status(200).json({
+  res.json({
     status: 'success',
     data: users
   })
@@ -68,6 +82,18 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
     }
   });
 }))
+
+// 取得使用者個人資料
+router.get('/profile/:id', asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+
+  if (!user) return appError(400, '找不到該使用者資訊！', next);
+  res.json({
+    status: 'success',
+    data: user
+  })
+}));
 
 // 更新使用者資訊
 router.patch('/:id', asyncErrorHandler(async (req, res, next) => {
