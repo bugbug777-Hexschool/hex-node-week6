@@ -61,6 +61,7 @@ app.use((err, req, res, next) => {
       errorName: err.name,
       statusCode: err.statusCode,
       message: err.message,
+      stacks: err.stack,
       error: err
     });
   }

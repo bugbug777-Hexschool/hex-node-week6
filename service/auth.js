@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
+const appError = require('../service/appError');
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -33,7 +34,7 @@ const checkAuth = asyncErrorHandler(async (req, res, next) => {
     token = authorization.split(' ')[1];
   }
   if (!token) return appError(401, '您尚未登入！', next);
-  const payload = await auth.verifyToken(token);
+  const payload = await verifyToken(token);
   const user = await User.findById(payload.id);
 
   req.user = user;

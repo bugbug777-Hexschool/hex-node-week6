@@ -4,9 +4,10 @@ const Post = require('../models/PostModel');
 const User = require('../models/UserModel');
 const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
+const auth = require('../service/auth');
 
 // 取得所有貼文
-router.get('/', asyncErrorHandler(async (req, res) => {
+router.get('/', auth.checkAuth, asyncErrorHandler(async (req, res) => {
   const { sort=-1, keyword } = req.query;
   const regex = new RegExp(keyword);
   const posts = await Post.find({ content: regex}).populate(
@@ -21,7 +22,7 @@ router.get('/', asyncErrorHandler(async (req, res) => {
 }));
 
 // 取得單筆貼文
-router.get('/:id', asyncErrorHandler(async (req, res, next) => {
+router.get('/:id', auth.checkAuth, asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const post = await Post.findById(id).populate(
     {
@@ -36,13 +37,12 @@ router.get('/:id', asyncErrorHandler(async (req, res, next) => {
 }));
 
 // 新增單筆貼文
-router.post('/', asyncErrorHandler(async (req, res, next) => {
-  const { user, content, photo } = req.body;
-  const isFound = await User.findById(user).exec();
+router.post('/', auth.checkAuth, asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.user;
+  const { content, photo } = req.body;
 
-  if (!isFound) return appError(400, '此用戶不存在！', next);
   const newPost = await Post.create({
-    user,
+    user: id,
     content,
     photo
   });
@@ -53,18 +53,19 @@ router.post('/', asyncErrorHandler(async (req, res, next) => {
 }));
 
 // 編輯單筆貼文
-router.patch('/:id', asyncErrorHandler(async (req, res, next) => {
+router.patch('/:id', auth.checkAuth, asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const { content } = req.body
-  
+
   if (!content) return appError(400, '貼文修改能容不能為空！');
   const post = await Post.findById(id);
 
   if (!post) return appError(400, '該貼文不存在！', next);
-  const editedPost = await Post.findOneAndUpdate(
+  if (req.user.id !== post.user._id) return appError(400, '非該貼文作者不能修改該貼文！', next);
+  const editedPost = await Post.findByIdAndUpdate(
     id,
     { content },
-    {new: true}
+    { new: true }
   )
 
   res.json({
