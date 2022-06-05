@@ -4,6 +4,7 @@ const User = require('../models/UserModel');
 const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
 const successHandler = require('../service/successHandler');
+const { generateToken } = require('../service/auth');
 
 // 取得所有使用者
 const getUsers = asyncErrorHandler(async (req, res, next) => {
@@ -30,7 +31,7 @@ const signUp = asyncErrorHandler(async (req, res, next) => {
     password
   });
 
-  const token = await auth.generateToken(newUser);
+  const token = await generateToken(newUser);
 
   successHandler(res, {
     name: newUser.name,
@@ -47,7 +48,7 @@ const signIn = asyncErrorHandler(async (req, res, next) => {
   const confirmed = await bcrypt.compare(password, user.password);
 
   if (!confirmed) return appError(400, '帳號密碼錯誤！', next);
-  const token = await auth.generateToken(user);
+  const token = await generateToken(user);
 
   successHandler(res, {
     name: user.name,
@@ -66,7 +67,7 @@ const updatePassword = asyncErrorHandler(async (req, res, next) => {
   password = await bcrypt.hash(password, 12);
   const editedUser = await User.findByIdAndUpdate(user._id, {password}, {new:true});
 
-  const token = await auth.generateToken(editedUser);
+  const token = await generateToken(editedUser);
 
   successHandler(res, {
     name: editedUser.name,
