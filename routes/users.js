@@ -84,11 +84,8 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
 }))
 
 // 取得使用者個人資訊
-router.get('/profile/:id', asyncErrorHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const user = await User.findById(id);
-
-  if (!user) return appError(400, '找不到該使用者資訊！', next);
+router.get('/profile', isAuth, asyncErrorHandler(async (req, res, next) => {
+  const user = req.user;
   res.json({
     status: 'success',
     data: user
@@ -96,17 +93,14 @@ router.get('/profile/:id', asyncErrorHandler(async (req, res, next) => {
 }));
 
 // 更新使用者個人資訊
-router.patch('/profile/:id', asyncErrorHandler(async (req, res, next) => {
-  const { id } = req.params;
+router.patch('/profile', isAuth, asyncErrorHandler(async (req, res, next) => {
+  const user = req.user;
   const { name, gender, avatar } = req.body;
-  const user = await User.findById(id).exec();
-
-  if (!user) return appError(400, '找不到該名使用者資訊！', next);
 
   if (!name || !gender) return  appError(400, '欄位資訊不能為空！', next);
 
   const editedUser = await User.findByIdAndUpdate(
-    id,
+    {_id: user._id},
     {name, gender, avatar},
     {new: true}
   );
