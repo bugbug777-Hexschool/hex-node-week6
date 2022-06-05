@@ -19,7 +19,8 @@ const isAuth = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(payload.id);
 
   req.user = user;
-  next()
+
+  next();
 });
 
 /* GET users listing. */
@@ -71,7 +72,6 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
   const confirmed = await bcrypt.compare(password, user.password);
 
   if (!confirmed) return appError(400, '帳號密碼錯誤！', next);
-  console.log(user);
   const token = await auth.generateToken(user);
 
   res.json({
@@ -82,6 +82,28 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
     }
   });
 }))
+
+// 更新密碼
+router.post('/updatePassword', isAuth, asyncErrorHandler(async (req, res, next) => {
+  const user = req.user;
+  let { password, confirmedPassword } = req.body;
+
+  if (!validator.isLength(password, {min: 8, max: 16})) return appError(400, '密碼長度只能介於 8 到 16 碼！', next);
+  if (password !== confirmedPassword) return appError(400, '密碼不一致！', next);
+
+  password = await bcrypt.hash(password, 12);
+  const editedUser = await User.findByIdAndUpdate(user._id, {password}, {new:true});
+
+  const token = await auth.generateToken(editedUser);
+
+  res.json({
+    status: 'success',
+    data: {
+      name: editedUser.name,
+      token
+    }
+  });
+}));
 
 // 取得使用者個人資訊
 router.get('/profile', isAuth, asyncErrorHandler(async (req, res, next) => {
