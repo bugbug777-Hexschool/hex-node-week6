@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 const appError = require('../service/appError');
 const asyncErrorHandler = require('../service/asyncErrorHandler');
+const auth = require('../service/auth');
 
 /* GET users listing. */
 // 取得所有使用者
@@ -36,14 +37,7 @@ router.post('/sign_up', asyncErrorHandler(async (req, res, next) => {
     password
   });
 
-  password = undefined; // clean password in ram
-
-  // generate JWT
-  const token = jwt.sign(
-    {id: newUser._id},
-    process.env.JWT_SECRET,
-    {expiresIn: process.env.JWT_EXPIRATION}
-  );
+  const token = await auth.generateToken(newUser);
 
   res.status(201).json({
     status: 'success',
@@ -63,9 +57,7 @@ router.post('/sign_in', asyncErrorHandler(async (req, res, next) => {
   const auth = await bcrypt.compare(password, user.password);
 
   if (!auth) return appError(400, '帳號密碼錯誤！', next);
-  const token = jwt.sign({id:user._id}, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRATION
-  });
+  const token = await auth.generateToken(user);
 
   res.json({
     status: 'success',
